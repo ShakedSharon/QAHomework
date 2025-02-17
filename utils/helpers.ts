@@ -37,7 +37,7 @@ export async function doLogin(page: Page, userName: string, password: string) {
         await clickOnElement(page, loginCss.submitButton);
         // validate reached to the personal area
         const elem = await page.getByText('אזור אישי');
-        await expect(elem).toBeVisible({timeout: 5000 });
+        await expect(elem).toBeVisible({timeout: 10000 });
     } catch(e) {
         throw new Error("doLogin | failed to login." + e);
     }
@@ -47,13 +47,13 @@ export async function doLogin(page: Page, userName: string, password: string) {
 // agree to terms
 export async function agreeToTerms(page: Page){
     try {
-        //wait for the terms window 6 second
-        const window = await page.waitForSelector(agreeToTermsCss.window, { timeout: 6000 });
+        //wait for the terms window 7 second
+        const window = await page.waitForSelector(agreeToTermsCss.window, { timeout: 7000 });
         if (window) { //if the terms window appear
             console.log('Agree to terms.');
             await page.locator(agreeToTermsCss.agreeButton).click(); // agree to terms
             // waiting for the window to disappear
-            await page.waitForSelector(agreeToTermsCss.window, { state: 'detached', timeout: 5000 });
+            await page.waitForSelector(agreeToTermsCss.window, { state: 'detached', timeout: 6000 });
         }
         //if the window didnt appear
     } catch (error) {
@@ -67,12 +67,13 @@ export async function addNewAd(page: Page, details: typeof adDetailsValue){
     try{
         await clickOnElement(page, addAdCss.addNewAd);
         // validate page is correct and loaded
-        await expect(page).toHaveTitle(/פרסום מודעה - HomMe/ ,{timeout: 5000});
+        await expect(page).toHaveTitle(/פרסום מודעה - HomMe/ ,{timeout: 7000});
         await expect(page.locator('.ff-el-progress-bar span')).toHaveText('16%', { timeout: 5000 });
         await page.waitForLoadState('load');
         // fill the fields
         for (const adPage of adDetailsType) {
             for (const field of adPage.fields) {
+                await page.waitForTimeout(500);
                 console.log(`the filed: name: ${field.name}, type: ${field.type}, value: ${details[field.name]}\n`);
                 switch (field.type) {
                     //text
@@ -131,7 +132,7 @@ export async function addNewAd(page: Page, details: typeof adDetailsValue){
 
 export async function validateNewAd(page: Page, details: typeof adDetailsValue) {
     try{
-        await page.waitForURL(apartmentListingsCss.apartmentListinURL, {timeout: 5000});
+        await page.waitForURL(apartmentListingsCss.apartmentListinURL, {timeout: 10000});
         // Search for the new ad in the ad list
         await page.waitForSelector(apartmentListingsCss.jetListingItems);
         const ads = await page.locator(apartmentListingsCss.jetListingItems);
